@@ -416,7 +416,6 @@ public class Publisher {
       currentAlarmFuture.cancel(false);
     }
     publishAllOutstanding();
-    messagesWaiter.waitNoMessages();
     for (AutoCloseable closeable : closeables) {
       ExecutorAsBackgroundResource executorAsBackgroundResource =
           (ExecutorAsBackgroundResource) closeable;
@@ -432,6 +431,7 @@ public class Publisher {
    * <p>Call this method to make sure all resources are freed properly.
    */
   public boolean awaitTermination(long duration, TimeUnit unit) throws InterruptedException {
+    messagesWaiter.waitNoMessages();
     boolean isAwaited = publisherStub.awaitTermination(duration, unit);
     if (isAwaited) {
       for (AutoCloseable closeable : closeables) {
