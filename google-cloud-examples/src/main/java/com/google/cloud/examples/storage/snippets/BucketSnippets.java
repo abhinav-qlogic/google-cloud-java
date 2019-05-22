@@ -33,6 +33,7 @@ import com.google.cloud.storage.Bucket.BucketSourceOption;
 import com.google.cloud.storage.Storage.BlobGetOption;
 import com.google.cloud.storage.StorageException;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
@@ -175,7 +176,7 @@ public class BucketSnippets {
   /** Example of creating a blob in the bucket from an input stream. */
   // [TARGET create(String, InputStream, BlobWriteOption...)]
   // [VARIABLE "my_blob_name"]
-  public Blob createBlobFromInputStream(String blobName) {
+  public Blob createBlobFromInputStream(String blobName) throws IOException {
     // [START createBlobFromInputStream]
     InputStream content = new ByteArrayInputStream("Hello, World!".getBytes(UTF_8));
     Blob blob = bucket.create(blobName, content);
@@ -186,7 +187,7 @@ public class BucketSnippets {
   /** Example of creating a blob in the bucket from a byte array with a content type. */
   // [TARGET create(String, byte[], String, BlobTargetOption...)]
   // [VARIABLE "my_blob_name"]
-  public Blob createBlobFromByteArrayWithContentType(String blobName) {
+  public Blob createBlobFromByteArrayWithContentType(String blobName) throws IOException {
     // [START createBlobFromByteArrayWithContentType]
     Blob blob = bucket.create(blobName, "Hello, World!".getBytes(UTF_8), "text/plain");
     // [END createBlobFromByteArrayWithContentType]
@@ -196,10 +197,10 @@ public class BucketSnippets {
   /** Example of creating a blob in the bucket from an input stream with a content type. */
   // [TARGET create(String, InputStream, String, BlobWriteOption...)]
   // [VARIABLE "my_blob_name"]
-  public Blob createBlobFromInputStreamWithContentType(String blobName) {
+  public Blob createBlobFromInputStreamWithContentType(String blobName) throws IOException {
     // [START createBlobFromInputStreamWithContentType]
     InputStream content = new ByteArrayInputStream("Hello, World!".getBytes(UTF_8));
-    Blob blob = bucket.create(blobName, content, "text/plain");
+    Blob blob = bucket.create(blobName, null, content, "text/plain");
     // [END createBlobFromInputStreamWithContentType]
     return blob;
   }

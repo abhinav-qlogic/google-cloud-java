@@ -205,9 +205,9 @@ public class BigQuerySnippets {
   // [TARGET delete(String, String)]
   // [VARIABLE "my_dataset_name"]
   // [VARIABLE "my_table_name"]
-  public boolean deleteTable(String datasetName, String tableName) {
+  public boolean deleteTable(TableId tableId) {
     // [START ]
-    boolean deleted = bigquery.delete(datasetName, tableName);
+    boolean deleted = bigquery.delete(tableId);
     if (deleted) {
       // the table was deleted
     } else {

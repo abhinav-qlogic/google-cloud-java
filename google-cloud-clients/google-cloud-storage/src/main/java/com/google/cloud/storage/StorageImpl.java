@@ -61,9 +61,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.hash.Hashing;
 import com.google.common.io.BaseEncoding;
+import com.google.common.io.ByteStreams;
 import com.google.common.net.UrlEscapers;
 import com.google.common.primitives.Ints;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -167,15 +169,19 @@ final class StorageImpl extends BaseService<StorageOptions> implements Storage {
   }
 
   @Override
-  @Deprecated
-  public Blob create(BlobInfo blobInfo, InputStream content, BlobWriteOption... options) {
-    Tuple<BlobInfo, BlobTargetOption[]> targetOptions = BlobTargetOption.convert(blobInfo, options);
-    StorageObject blobPb = targetOptions.x().toPb();
-    Map<StorageRpc.Option, ?> optionsMap = optionMap(targetOptions.x(), targetOptions.y());
-    InputStream inputStreamParam =
-        firstNonNull(content, new ByteArrayInputStream(EMPTY_BYTE_ARRAY));
-    // retries are not safe when the input is an InputStream, so we can't retry.
-    return Blob.fromPb(this, storageRpc.create(blobPb, inputStreamParam, optionsMap));
+  public Blob create(BlobInfo blobInfo, InputStream content, BlobTargetOption... options)
+      throws IOException {
+    firstNonNull(content, EMPTY_BYTE_ARRAY);
+    byte[] contentBytes = ByteStreams.toByteArray(content);
+    BlobInfo updatedInfo =
+        blobInfo
+            .toBuilder()
+            .setMd5(BaseEncoding.base64().encode(Hashing.md5().hashBytes(contentBytes).asBytes()))
+            .setCrc32c(
+                BaseEncoding.base64()
+                    .encode(Ints.toByteArray(Hashing.crc32c().hashBytes(contentBytes).asInt())))
+            .build();
+    return internalCreate(updatedInfo, contentBytes, options);
   }
 
   private Blob internalCreate(BlobInfo info, final byte[] content, BlobTargetOption... options) {

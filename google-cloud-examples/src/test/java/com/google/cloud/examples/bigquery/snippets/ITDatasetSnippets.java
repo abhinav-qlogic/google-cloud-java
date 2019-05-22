@@ -31,6 +31,7 @@ import com.google.cloud.bigquery.DatasetInfo;
 import com.google.cloud.bigquery.Field;
 import com.google.cloud.bigquery.StandardTableDefinition;
 import com.google.cloud.bigquery.Table;
+import com.google.cloud.bigquery.TableId;
 import com.google.cloud.bigquery.testing.RemoteBigQueryHelper;
 import java.util.Iterator;
 import org.junit.AfterClass;
@@ -128,7 +129,8 @@ public class ITDatasetSnippets {
     assertEquals(expectedTableName, actualTable.getTableId().getTable());
     assertFalse(iterator.hasNext());
 
-    bigquery.delete(DATASET, expectedTableName);
+    TableId tableId = TableId.of(DATASET, expectedTableName);
+    bigquery.delete(tableId);
   }
 
   @Test
@@ -141,7 +143,8 @@ public class ITDatasetSnippets {
     assertNotNull(actualTable);
     assertEquals(expectedTableName, actualTable.getTableId().getTable());
 
-    bigquery.delete(DATASET, expectedTableName);
+    TableId tableId = TableId.of(DATASET, expectedTableName);
+    bigquery.delete(tableId);
   }
 
   @Test
@@ -157,6 +160,7 @@ public class ITDatasetSnippets {
     Field actualField = actualTable.getDefinition().getSchema().getFields().get(0);
     assertEquals(expectedFieldName, actualField.getName());
 
-    bigquery.delete(DATASET, expectedTableName);
+    TableId tableId = TableId.of(DATASET, expectedTableName);
+    bigquery.delete(tableId);
   }
 }

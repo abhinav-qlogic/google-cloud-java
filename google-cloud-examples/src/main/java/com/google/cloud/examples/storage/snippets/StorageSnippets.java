@@ -151,7 +151,7 @@ public class StorageSnippets {
   // [TARGET create(BlobInfo, InputStream, BlobWriteOption...)]
   // [VARIABLE "my_unique_bucket"]
   // [VARIABLE "my_blob_name"]
-  public Blob createBlobFromInputStream(String bucketName, String blobName) {
+  public Blob createBlobFromInputStream(String bucketName, String blobName) throws IOException {
     // [START createBlobFromInputStream]
     InputStream content = new ByteArrayInputStream("Hello, World!".getBytes(UTF_8));
     BlobId blobId = BlobId.of(bucketName, blobName);

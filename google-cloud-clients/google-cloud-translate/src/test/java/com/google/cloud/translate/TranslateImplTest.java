@@ -43,7 +43,6 @@ import org.junit.rules.ExpectedException;
 
 public class TranslateImplTest {
 
-  private static final String API_KEY = "api_key";
   private static final String TARGET_LANGUAGE = "es";
 
   private static final LanguagesResource LANGUAGE1_PB =
@@ -117,7 +116,6 @@ public class TranslateImplTest {
     EasyMock.replay(rpcFactoryMock);
     options =
         TranslateOptions.newBuilder()
-            .setApiKey(API_KEY)
             .setServiceRpcFactory(rpcFactoryMock)
             .setRetrySettings(NO_RETRY_SETTINGS)
             .build();

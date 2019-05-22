@@ -66,7 +66,7 @@ public class HttpDatastoreRpc implements DatastoreRpc {
               + com.google.datastore.v1.client.DatastoreFactory.VERSION
               + "/projects/"
               + options.getProjectId();
-      clientBuilder = clientBuilder.projectId(null).projectEndpoint(fullUrl);
+      clientBuilder = clientBuilder.projectId(null).host(fullUrl);
     }
     client = com.google.datastore.v1.client.DatastoreFactory.get().create(clientBuilder.build());
   }

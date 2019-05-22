@@ -44,6 +44,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.io.BaseEncoding;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.security.Key;
 import java.util.Collections;
@@ -473,9 +474,9 @@ public class BucketTest {
   }
 
   @Test
-  public void testCreateFromStream() throws Exception {
+  public void testCreateFromStream() throws IOException {
     initializeExpectedBucket(5);
-    BlobInfo info = BlobInfo.newBuilder("b", "n").setContentType(CONTENT_TYPE).build();
+    BlobInfo info = BlobInfo.newBuilder("b", "n", null).setContentType(CONTENT_TYPE).build();
     Blob expectedBlob = new Blob(serviceMockReturnsOptions, new BlobInfo.BuilderImpl(info));
     byte[] content = {0xD, 0xE, 0xA, 0xD};
     InputStream streamContent = new ByteArrayInputStream(content);
@@ -483,12 +484,12 @@ public class BucketTest {
     expect(storage.create(info, streamContent)).andReturn(expectedBlob);
     replay(storage);
     initializeBucket();
-    Blob blob = bucket.create("n", streamContent, CONTENT_TYPE);
+    Blob blob = bucket.create("n", null, streamContent, CONTENT_TYPE);
     assertEquals(expectedBlob, blob);
   }
 
   @Test
-  public void testCreateFromStreamNoContentType() throws Exception {
+  public void testCreateFromStreamNoContentType() throws IOException {
     initializeExpectedBucket(5);
     BlobInfo info = BlobInfo.newBuilder("b", "n").build();
     Blob expectedBlob = new Blob(serviceMockReturnsOptions, new BlobInfo.BuilderImpl(info));
@@ -503,14 +504,12 @@ public class BucketTest {
   }
 
   @Test
-  public void testCreateFromStreamWithOptions() throws Exception {
+  public void testCreateFromStreamWithOptions() throws IOException {
     initializeExpectedBucket(5);
     BlobInfo info =
         BlobInfo.newBuilder(BlobId.of("b", "n", 42L))
             .setContentType(CONTENT_TYPE)
             .setMetageneration(24L)
-            .setCrc32c("crc")
-            .setMd5("md5")
             .build();
     Blob expectedBlob = new Blob(serviceMockReturnsOptions, new BlobInfo.BuilderImpl(info));
     byte[] content = {0xD, 0xE, 0xA, 0xD};
@@ -521,28 +520,25 @@ public class BucketTest {
             storage.create(
                 info,
                 streamContent,
-                Storage.BlobWriteOption.generationMatch(),
-                Storage.BlobWriteOption.metagenerationMatch(),
-                Storage.BlobWriteOption.predefinedAcl(acl),
-                Storage.BlobWriteOption.crc32cMatch(),
-                Storage.BlobWriteOption.md5Match(),
-                Storage.BlobWriteOption.encryptionKey(BASE64_KEY),
-                Storage.BlobWriteOption.userProject(USER_PROJECT)))
+                Storage.BlobTargetOption.generationMatch(),
+                Storage.BlobTargetOption.metagenerationMatch(),
+                Storage.BlobTargetOption.predefinedAcl(acl),
+                Storage.BlobTargetOption.encryptionKey(BASE64_KEY),
+                Storage.BlobTargetOption.userProject(USER_PROJECT)))
         .andReturn(expectedBlob);
     replay(storage);
     initializeBucket();
     Blob blob =
         bucket.create(
             "n",
+            42L,
             streamContent,
             CONTENT_TYPE,
-            Bucket.BlobWriteOption.generationMatch(42L),
-            Bucket.BlobWriteOption.metagenerationMatch(24L),
-            Bucket.BlobWriteOption.predefinedAcl(acl),
-            Bucket.BlobWriteOption.crc32cMatch("crc"),
-            Bucket.BlobWriteOption.md5Match("md5"),
-            Bucket.BlobWriteOption.encryptionKey(BASE64_KEY),
-            Bucket.BlobWriteOption.userProject(USER_PROJECT));
+            Bucket.BlobTargetOption.generationMatch(42L),
+            Bucket.BlobTargetOption.metagenerationMatch(24L),
+            Bucket.BlobTargetOption.predefinedAcl(acl),
+            Bucket.BlobTargetOption.encryptionKey(BASE64_KEY),
+            Bucket.BlobTargetOption.userProject(USER_PROJECT));
     assertEquals(expectedBlob, blob);
   }
 
@@ -554,17 +550,18 @@ public class BucketTest {
     byte[] content = {0xD, 0xE, 0xA, 0xD};
     InputStream streamContent = new ByteArrayInputStream(content);
     expect(storage.getOptions()).andReturn(mockOptions);
-    expect(storage.create(info, streamContent, Storage.BlobWriteOption.encryptionKey(KEY)))
+    expect(storage.create(info, streamContent, Storage.BlobTargetOption.encryptionKey(KEY)))
         .andReturn(expectedBlob);
     replay(storage);
     initializeBucket();
     Blob blob =
-        bucket.create("n", streamContent, CONTENT_TYPE, Bucket.BlobWriteOption.encryptionKey(KEY));
+        bucket.create(
+            "n", null, streamContent, CONTENT_TYPE, Bucket.BlobTargetOption.encryptionKey(KEY));
     assertEquals(expectedBlob, blob);
   }
 
   @Test
-  public void testCreateFromStreamNotExists() throws Exception {
+  public void testCreateFromStreamNotExists() throws IOException {
     initializeExpectedBucket(5);
     BlobInfo info =
         BlobInfo.newBuilder(BlobId.of("b", "n", 0L)).setContentType(CONTENT_TYPE).build();
@@ -572,17 +569,15 @@ public class BucketTest {
     byte[] content = {0xD, 0xE, 0xA, 0xD};
     InputStream streamContent = new ByteArrayInputStream(content);
     expect(storage.getOptions()).andReturn(mockOptions);
-    expect(storage.create(info, streamContent, Storage.BlobWriteOption.generationMatch()))
-        .andReturn(expectedBlob);
+    expect(storage.create(info, streamContent)).andReturn(expectedBlob);
     replay(storage);
     initializeBucket();
-    Blob blob =
-        bucket.create("n", streamContent, CONTENT_TYPE, Bucket.BlobWriteOption.doesNotExist());
+    Blob blob = bucket.create("n", 0L, streamContent, CONTENT_TYPE);
     assertEquals(expectedBlob, blob);
   }
 
   @Test
-  public void testCreateFromStreamWithWrongGenerationOptions() throws Exception {
+  public void testCreateFromStreamWithWrongGenerationOptions() throws IOException {
     initializeExpectedBucket(4);
     expect(storage.getOptions()).andReturn(mockOptions);
     replay(storage);
@@ -594,10 +589,11 @@ public class BucketTest {
         "Only one option of generationMatch, doesNotExist or generationNotMatch can be provided");
     bucket.create(
         "n",
+        0L,
         streamContent,
         CONTENT_TYPE,
-        Bucket.BlobWriteOption.generationMatch(42L),
-        Bucket.BlobWriteOption.generationNotMatch(24L));
+        Bucket.BlobTargetOption.generationMatch(42L),
+        Bucket.BlobTargetOption.generationNotMatch(24L));
   }
 
   @Test
@@ -613,10 +609,11 @@ public class BucketTest {
         "metagenerationMatch and metagenerationNotMatch options can not be both provided");
     bucket.create(
         "n",
+        0L,
         streamContent,
         CONTENT_TYPE,
-        Bucket.BlobWriteOption.metagenerationMatch(42L),
-        Bucket.BlobWriteOption.metagenerationNotMatch(24L));
+        Bucket.BlobTargetOption.metagenerationMatch(42L),
+        Bucket.BlobTargetOption.metagenerationNotMatch(24L));
   }
 
   @Test

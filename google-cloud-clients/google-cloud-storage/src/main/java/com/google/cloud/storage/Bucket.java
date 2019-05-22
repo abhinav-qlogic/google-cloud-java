@@ -915,11 +915,18 @@ public class Bucket extends BucketInfo {
    * @throws StorageException upon failure
    */
   public Blob create(
-      String blob, InputStream content, String contentType, BlobWriteOption... options) {
+      String blob,
+      Long generation,
+      InputStream content,
+      String contentType,
+      BlobTargetOption... options)
+      throws IOException {
     BlobInfo blobInfo =
-        BlobInfo.newBuilder(BlobId.of(getName(), blob)).setContentType(contentType).build();
-    Tuple<BlobInfo, Storage.BlobWriteOption[]> write =
-        BlobWriteOption.toWriteOptions(blobInfo, options);
+        BlobInfo.newBuilder(BlobId.of(getName(), blob, generation))
+            .setContentType(contentType)
+            .build();
+    Tuple<BlobInfo, Storage.BlobTargetOption[]> write =
+        BlobTargetOption.toTargetOptions(blobInfo, options);
     return storage.create(write.x(), content, write.y());
   }
 
@@ -968,11 +975,12 @@ public class Bucket extends BucketInfo {
    * @return a complete blob information
    * @throws StorageException upon failure
    */
-  public Blob create(String blob, InputStream content, BlobWriteOption... options) {
+  public Blob create(String blob, InputStream content, BlobTargetOption... options)
+      throws IOException {
     BlobInfo blobInfo = BlobInfo.newBuilder(BlobId.of(getName(), blob)).build();
-    Tuple<BlobInfo, Storage.BlobWriteOption[]> write =
-        BlobWriteOption.toWriteOptions(blobInfo, options);
-    return storage.create(write.x(), content, write.y());
+    Tuple<BlobInfo, Storage.BlobTargetOption[]> write =
+        BlobTargetOption.toTargetOptions(blobInfo, options);
+    return storage.create(blobInfo, content, write.y());
   }
 
   /**

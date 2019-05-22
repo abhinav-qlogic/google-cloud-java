@@ -33,6 +33,7 @@ import com.google.cloud.storage.StorageException;
 import com.google.cloud.storage.StorageRoles;
 import com.google.cloud.storage.testing.RemoteStorageHelper;
 import com.google.common.collect.Sets;
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -83,7 +84,7 @@ public class ITBucketSnippets {
   }
 
   @Test
-  public void testBucket() throws InterruptedException {
+  public void testBucket() throws InterruptedException, IOException {
     assertTrue(bucketSnippets.exists());
     Bucket bucket = bucketSnippets.reload();
     assertNotNull(bucket);

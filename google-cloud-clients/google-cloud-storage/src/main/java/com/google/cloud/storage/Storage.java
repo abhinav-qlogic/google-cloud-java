@@ -35,6 +35,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.io.BaseEncoding;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
@@ -414,6 +415,16 @@ public interface Storage extends Service<StorageOptions> {
             targetOptions.add(option.toTargetOption());
             break;
         }
+      }
+      return Tuple.of(
+          infoBuilder.build(), targetOptions.toArray(new BlobTargetOption[targetOptions.size()]));
+    }
+
+    static Tuple<BlobInfo, BlobTargetOption[]> convert(BlobInfo info, BlobTargetOption... options) {
+      BlobInfo.Builder infoBuilder = info.toBuilder().setCrc32c(null).setMd5(null);
+      List<BlobTargetOption> targetOptions = Lists.newArrayListWithCapacity(options.length);
+      for (BlobTargetOption option : options) {
+        targetOptions.add(option);
       }
       return Tuple.of(
           infoBuilder.build(), targetOptions.toArray(new BlobTargetOption[targetOptions.size()]));
@@ -1490,14 +1501,7 @@ public interface Storage extends Service<StorageOptions> {
       BlobInfo blobInfo, byte[] content, int offset, int length, BlobTargetOption... options);
 
   /**
-   * Creates a new blob. Direct upload is used to upload {@code content}. For large content, {@link
-   * #writer} is recommended as it uses resumable upload. By default any md5 and crc32c values in
-   * the given {@code blobInfo} are ignored unless requested via the {@code
-   * BlobWriteOption.md5Match} and {@code BlobWriteOption.crc32cMatch} options. The given input
-   * stream is closed upon success.
-   *
-   * <p>This method is marked as {@link Deprecated} because it cannot safely retry, given that it
-   * accepts an {@link InputStream} which can only be consumed once.
+   * Creates a new blob. Direct upload is used to upload {@code content}.
    *
    * <p>Example of creating a blob from an input stream.
    *
@@ -1522,14 +1526,14 @@ public interface Storage extends Service<StorageOptions> {
    * BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
    *     .setContentType("text/plain")
    *     .build();
-   * Blob blob = storage.create(blobInfo, content, BlobWriteOption.encryptionKey(encryptionKey));
+   * Blob blob = storage.create(blobInfo, content, BlobTargetOption.encryptionKey(encryptionKey));
    * }</pre>
    *
    * @return a [@code Blob} with complete information
    * @throws StorageException upon failure
    */
-  @Deprecated
-  Blob create(BlobInfo blobInfo, InputStream content, BlobWriteOption... options);
+  Blob create(BlobInfo blobInfo, InputStream content, BlobTargetOption... options)
+      throws IOException;
 
   /**
    * Returns the requested bucket or {@code null} if not found.

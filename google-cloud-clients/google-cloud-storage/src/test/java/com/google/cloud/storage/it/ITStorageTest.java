@@ -567,7 +567,7 @@ public class ITStorageTest {
   }
 
   @Test
-  public void testCreateBlobStream() {
+  public void testCreateBlobStream() throws IOException {
     String blobName = "test-create-blob-stream";
     BlobInfo blob = BlobInfo.newBuilder(BUCKET, blobName).setContentType(CONTENT_TYPE).build();
     ByteArrayInputStream stream = new ByteArrayInputStream(BLOB_STRING_CONTENT.getBytes(UTF_8));
@@ -597,7 +597,7 @@ public class ITStorageTest {
   }
 
   @Test
-  public void testCreateBlobMd5Fail() {
+  public void testCreateBlobMd5Fail() throws IOException {
     String blobName = "test-create-blob-md5-fail";
     BlobInfo blob =
         BlobInfo.newBuilder(BUCKET, blobName)
@@ -606,7 +606,7 @@ public class ITStorageTest {
             .build();
     ByteArrayInputStream stream = new ByteArrayInputStream(BLOB_STRING_CONTENT.getBytes(UTF_8));
     try {
-      storage.create(blob, stream, Storage.BlobWriteOption.md5Match());
+      storage.create(blob, stream);
       fail("StorageException was expected");
     } catch (StorageException ex) {
       // expected

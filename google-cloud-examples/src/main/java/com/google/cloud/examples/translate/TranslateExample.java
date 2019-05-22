@@ -186,7 +186,6 @@ public class TranslateExample {
     TranslateAction action;
     String actionName;
     if (args.length >= 3 && !ACTIONS.containsKey(args[1])) {
-      optionsBuilder.setApiKey(args[0]);
       actionName = args[2];
       optionsBuilder.setTargetLanguage(args[1]);
       args = Arrays.copyOfRange(args, 3, args.length);

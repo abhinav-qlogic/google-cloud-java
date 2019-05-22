@@ -676,7 +676,7 @@ public class ITBigQueryTest {
       List<String> partitions = bigquery.listPartitions(TableId.of(DATASET, tableName));
       assertEquals(1, partitions.size());
     } finally {
-      bigquery.delete(DATASET, tableName);
+      bigquery.delete(tableId);
     }
   }
 
@@ -806,7 +806,7 @@ public class ITBigQueryTest {
 
   @Test
   public void testDeleteNonExistingTable() {
-    assertFalse(bigquery.delete(DATASET, "test_delete_non_existing_table"));
+    assertFalse(bigquery.delete("test_delete_non_existing_table"));
   }
 
   @Test
@@ -1275,7 +1275,7 @@ public class ITBigQueryTest {
 
     assertNotNull(completedJob);
     assertNull(completedJob.getStatus().getError());
-    assertTrue(bigquery.delete(DATASET, destinationTableName));
+    assertTrue(bigquery.delete(destinationTable));
   }
 
   @Test
@@ -1325,7 +1325,7 @@ public class ITBigQueryTest {
             RetryOption.totalTimeout(Duration.ofMinutes(1)));
     assertNotNull(completedJob);
     assertNull(completedJob.getStatus().getError());
-    assertTrue(bigquery.delete(DATASET, destinationTableName));
+    assertTrue(bigquery.delete(destinationTable));
   }
 
   @Test
@@ -1383,7 +1383,7 @@ public class ITBigQueryTest {
       rowCount++;
     }
     assertEquals(2, rowCount);
-    assertTrue(bigquery.delete(DATASET, tableName));
+    assertTrue(bigquery.delete(destinationTable));
     Job queryJob = bigquery.getJob(remoteJob.getJobId());
     JobStatistics.QueryStatistics statistics = queryJob.getStatistics();
     assertNotNull(statistics.getQueryPlan());
@@ -1430,7 +1430,7 @@ public class ITBigQueryTest {
         new String(storage.readAllBytes(BUCKET, EXTRACT_FILE), StandardCharsets.UTF_8);
     assertEquals(
         Sets.newHashSet(CSV_CONTENT.split("\n")), Sets.newHashSet(extractedCsv.split("\n")));
-    assertTrue(bigquery.delete(DATASET, tableName));
+    assertTrue(bigquery.delete(destinationTable));
   }
 
   @Test
@@ -1527,7 +1527,7 @@ public class ITBigQueryTest {
       rowCount++;
     }
     assertEquals(2, rowCount);
-    assertTrue(bigquery.delete(DATASET, destinationTableName));
+    assertTrue(bigquery.delete(tableId));
   }
 
   @Test

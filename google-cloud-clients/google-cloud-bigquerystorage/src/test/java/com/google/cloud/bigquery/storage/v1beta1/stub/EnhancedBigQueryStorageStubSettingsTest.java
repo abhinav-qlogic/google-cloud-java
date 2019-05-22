@@ -34,6 +34,7 @@ import com.google.cloud.bigquery.storage.v1beta1.Storage.ReadSession;
 import com.google.cloud.bigquery.storage.v1beta1.Storage.SplitReadStreamRequest;
 import com.google.cloud.bigquery.storage.v1beta1.Storage.SplitReadStreamResponse;
 import com.google.protobuf.Empty;
+import java.util.Arrays;
 import java.util.Set;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -120,7 +121,10 @@ public class EnhancedBigQueryStorageStubSettingsTest {
   public void testReadRowsSettings() {
     ServerStreamingCallSettings.Builder<ReadRowsRequest, ReadRowsResponse> builder =
         EnhancedBigQueryStorageStubSettings.newBuilder().readRowsSettings();
-    assertThat(builder.getRetryableCodes()).containsAllOf(Code.DEADLINE_EXCEEDED, Code.UNAVAILABLE);
+    assertThat(
+        builder
+            .getRetryableCodes()
+            .containsAll(Arrays.asList(Code.DEADLINE_EXCEEDED, Code.UNAVAILABLE)));
     RetrySettings retrySettings = builder.getRetrySettings();
     assertThat(retrySettings.getInitialRetryDelay()).isEqualTo(Duration.ofMillis(100L));
     assertThat(retrySettings.getRetryDelayMultiplier()).isWithin(1e-6).of(1.3);
@@ -157,7 +161,7 @@ public class EnhancedBigQueryStorageStubSettingsTest {
   }
 
   private void verifyRetrySettings(Set<Code> retryCodes, RetrySettings retrySettings) {
-    assertThat(retryCodes).containsAllOf(Code.DEADLINE_EXCEEDED, Code.UNAVAILABLE);
+    assertThat(retryCodes.containsAll(Arrays.asList(Code.DEADLINE_EXCEEDED, Code.UNAVAILABLE)));
     assertThat(retrySettings.getTotalTimeout()).isGreaterThan(Duration.ZERO);
     assertThat(retrySettings.getInitialRetryDelay()).isGreaterThan(Duration.ZERO);
     assertThat(retrySettings.getRetryDelayMultiplier()).isAtLeast(1.0);

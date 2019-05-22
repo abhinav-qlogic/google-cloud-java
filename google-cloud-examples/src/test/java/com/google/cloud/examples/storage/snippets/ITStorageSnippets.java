@@ -227,7 +227,7 @@ public class ITStorageSnippets {
   }
 
   @Test
-  public void testCreateBlobFromInputStream() {
+  public void testCreateBlobFromInputStream() throws IOException {
     Blob blob =
         storageSnippets.createBlobFromInputStream(BUCKET, "test-create-blob-from-input-stream");
     assertNotNull(blob);

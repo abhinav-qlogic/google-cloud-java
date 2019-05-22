@@ -163,7 +163,7 @@ public class ITBigQuerySnippets {
                       .iterator(),
                   TO_TABLE_ID_FUNCTION));
     }
-    assertTrue(bigquerySnippets.deleteTable(DATASET, tableName));
+    assertTrue(bigquerySnippets.deleteTable(tableId));
     assertFalse(bigquerySnippets.deleteTableFromId(tableId.getProject(), DATASET, tableName));
   }
 
@@ -211,6 +211,7 @@ public class ITBigQuerySnippets {
     // Create table
     String tableName = "test_write_and_list_table_data";
     String fieldName = "string_field";
+    TableId tableId = TableId.of(bigquery.getOptions().getProjectId(), DATASET, tableName);
     assertNotNull(bigquerySnippets.createTable(DATASET, tableName, fieldName));
     // Add rows from string
     long outputRows =
@@ -228,7 +229,7 @@ public class ITBigQuerySnippets {
     assertTrue(tableDataString.contains("StringValue2"));
     assertTrue(tableDataString.contains("StringValue3"));
     assertTrue(tableDataString.contains("StringValue4"));
-    assertTrue(bigquerySnippets.deleteTable(DATASET, tableName));
+    assertTrue(bigquerySnippets.deleteTable(tableId));
   }
 
   @Test
@@ -287,7 +288,7 @@ public class ITBigQuerySnippets {
 
     bigquerySnippets.listTableDataSchemaId();
 
-    assertTrue(bigquerySnippets.deleteTable(DATASET, tableName));
+    assertTrue(bigquerySnippets.deleteTable(tableId));
   }
 
   @Test

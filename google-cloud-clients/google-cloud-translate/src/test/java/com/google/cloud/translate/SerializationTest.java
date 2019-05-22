@@ -47,10 +47,7 @@ public class SerializationTest extends BaseSerializationTest {
   @Override
   protected Serializable[] serializableObjects() {
     TranslateOptions options =
-        TranslateOptions.newBuilder()
-            .setApiKey(API_KEY)
-            .setCredentials(NoCredentials.getInstance())
-            .build();
+        TranslateOptions.newBuilder().setCredentials(NoCredentials.getInstance()).build();
     TranslateOptions otherOptions = options.toBuilder().build();
     return new Serializable[] {
       DETECTION,
