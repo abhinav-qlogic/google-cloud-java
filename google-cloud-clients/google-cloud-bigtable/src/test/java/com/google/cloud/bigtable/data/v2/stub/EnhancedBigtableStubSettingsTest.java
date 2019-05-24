@@ -192,23 +192,25 @@ public class EnhancedBigtableStubSettingsTest {
     builder.readRowSettings().setRetryableCodes(Code.ABORTED, Code.DEADLINE_EXCEEDED);
 
     assertThat(builder.readRowsSettings().getIdleTimeout()).isEqualTo(Duration.ofMinutes(5));
-    assertThat(builder.readRowsSettings().getRetryableCodes().containsAll(retryCodeList));
+    assertThat(builder.readRowsSettings().getRetryableCodes().containsAll(retryCodeList)).isTrue();
     assertThat(builder.readRowsSettings().getRetrySettings()).isEqualTo(retrySettings);
 
     assertThat(builder.build().readRowsSettings().getIdleTimeout())
         .isEqualTo(Duration.ofMinutes(5));
-    assertThat(builder.build().readRowsSettings().getRetryableCodes().containsAll(retryCodeList));
+    assertThat(builder.build().readRowsSettings().getRetryableCodes().containsAll(retryCodeList))
+        .isTrue();
     assertThat(builder.build().readRowsSettings().getRetrySettings()).isEqualTo(retrySettings);
 
     assertThat(builder.build().toBuilder().readRowsSettings().getIdleTimeout())
         .isEqualTo(Duration.ofMinutes(5));
     assertThat(
-        builder
-            .build()
-            .toBuilder()
-            .readRowsSettings()
-            .getRetryableCodes()
-            .containsAll(retryCodeList));
+            builder
+                .build()
+                .toBuilder()
+                .readRowsSettings()
+                .getRetryableCodes()
+                .containsAll(retryCodeList))
+        .isTrue();
     assertThat(builder.build().toBuilder().readRowsSettings().getRetrySettings())
         .isEqualTo(retrySettings);
   }
@@ -247,19 +249,22 @@ public class EnhancedBigtableStubSettingsTest {
     // Streaming readRows settings must match point lookup settings.
     builder.readRowsSettings().setRetryableCodes(Code.ABORTED, Code.DEADLINE_EXCEEDED);
 
-    assertThat(builder.readRowSettings().getRetryableCodes().containsAll(retryCodeList));
+    assertThat(builder.readRowSettings().getRetryableCodes().containsAll(retryCodeList)).isTrue();
     assertThat(builder.readRowSettings().getRetrySettings()).isEqualTo(retrySettings);
 
-    assertThat(builder.build().readRowSettings().getRetryableCodes().containsAll(retryCodeList));
+    assertThat(builder.build().readRowSettings().getRetryableCodes().containsAll(retryCodeList))
+        .isTrue();
     assertThat(builder.build().readRowSettings().getRetrySettings()).isEqualTo(retrySettings);
 
     assertThat(
-        builder
-            .build()
-            .toBuilder()
-            .readRowSettings()
-            .getRetryableCodes()
-            .containsAll(retryCodeList));
+            builder
+                .build()
+                .toBuilder()
+                .readRowSettings()
+                .getRetryableCodes()
+                .containsAll(retryCodeList))
+        .isTrue();
+    ;
     assertThat(builder.build().toBuilder().readRowSettings().getRetrySettings())
         .isEqualTo(retrySettings);
   }
@@ -328,20 +333,23 @@ public class EnhancedBigtableStubSettingsTest {
         .setRetrySettings(retrySettings)
         .build();
 
-    assertThat(builder.sampleRowKeysSettings().getRetryableCodes().containsAll(retryCodeList));
+    assertThat(builder.sampleRowKeysSettings().getRetryableCodes().containsAll(retryCodeList))
+        .isTrue();
     assertThat(builder.sampleRowKeysSettings().getRetrySettings()).isEqualTo(retrySettings);
 
     assertThat(
-        builder.build().sampleRowKeysSettings().getRetryableCodes().containsAll(retryCodeList));
+            builder.build().sampleRowKeysSettings().getRetryableCodes().containsAll(retryCodeList))
+        .isTrue();
     assertThat(builder.build().sampleRowKeysSettings().getRetrySettings()).isEqualTo(retrySettings);
 
     assertThat(
-        builder
-            .build()
-            .toBuilder()
-            .sampleRowKeysSettings()
-            .getRetryableCodes()
-            .containsAll(retryCodeList));
+            builder
+                .build()
+                .toBuilder()
+                .sampleRowKeysSettings()
+                .getRetryableCodes()
+                .containsAll(retryCodeList))
+        .isTrue();
     assertThat(builder.build().toBuilder().sampleRowKeysSettings().getRetrySettings())
         .isEqualTo(retrySettings);
   }
@@ -379,19 +387,21 @@ public class EnhancedBigtableStubSettingsTest {
         .setRetrySettings(retrySettings)
         .build();
 
-    assertThat(builder.mutateRowSettings().getRetryableCodes().containsAll(retryCodeList));
+    assertThat(builder.mutateRowSettings().getRetryableCodes().containsAll(retryCodeList)).isTrue();
     assertThat(builder.mutateRowSettings().getRetrySettings()).isEqualTo(retrySettings);
 
-    assertThat(builder.build().mutateRowSettings().getRetryableCodes().containsAll(retryCodeList));
+    assertThat(builder.build().mutateRowSettings().getRetryableCodes().containsAll(retryCodeList))
+        .isTrue();
     assertThat(builder.build().mutateRowSettings().getRetrySettings()).isEqualTo(retrySettings);
 
     assertThat(
-        builder
-            .build()
-            .toBuilder()
-            .mutateRowSettings()
-            .getRetryableCodes()
-            .containsAll(retryCodeList));
+            builder
+                .build()
+                .toBuilder()
+                .mutateRowSettings()
+                .getRetryableCodes()
+                .containsAll(retryCodeList))
+        .isTrue();
     assertThat(builder.build().toBuilder().mutateRowSettings().getRetrySettings())
         .isEqualTo(retrySettings);
   }
@@ -432,25 +442,28 @@ public class EnhancedBigtableStubSettingsTest {
         .setBatchingSettings(batchingSettings)
         .build();
 
-    assertThat(builder.bulkMutateRowsSettings().getRetryableCodes().containsAll(retryCodeList));
+    assertThat(builder.bulkMutateRowsSettings().getRetryableCodes().containsAll(retryCodeList))
+        .isTrue();
     assertThat(builder.bulkMutateRowsSettings().getRetrySettings()).isEqualTo(retrySettings);
     assertThat(builder.bulkMutateRowsSettings().getBatchingSettings())
         .isSameInstanceAs(batchingSettings);
 
     assertThat(
-        builder.build().bulkMutateRowsSettings().getRetryableCodes().containsAll(retryCodeList));
+            builder.build().bulkMutateRowsSettings().getRetryableCodes().containsAll(retryCodeList))
+        .isTrue();
     assertThat(builder.build().bulkMutateRowsSettings().getRetrySettings())
         .isEqualTo(retrySettings);
     assertThat(builder.build().bulkMutateRowsSettings().getBatchingSettings())
         .isSameInstanceAs(batchingSettings);
 
     assertThat(
-        builder
-            .build()
-            .toBuilder()
-            .bulkMutateRowsSettings()
-            .getRetryableCodes()
-            .containsAll(retryCodeList));
+            builder
+                .build()
+                .toBuilder()
+                .bulkMutateRowsSettings()
+                .getRetryableCodes()
+                .containsAll(retryCodeList))
+        .isTrue();
     assertThat(builder.build().toBuilder().bulkMutateRowsSettings().getRetrySettings())
         .isEqualTo(retrySettings);
     assertThat(builder.build().toBuilder().bulkMutateRowsSettings().getBatchingSettings())
@@ -496,22 +509,29 @@ public class EnhancedBigtableStubSettingsTest {
         .setRetrySettings(retrySettings)
         .build();
 
-    assertThat(builder.checkAndMutateRowSettings().getRetryableCodes().containsAll(retryCodeList));
+    assertThat(builder.checkAndMutateRowSettings().getRetryableCodes().containsAll(retryCodeList))
+        .isTrue();
     assertThat(builder.checkAndMutateRowSettings().getRetrySettings())
         .isSameInstanceAs(retrySettings);
 
     assertThat(
-        builder.build().checkAndMutateRowSettings().getRetryableCodes().containsAll(retryCodeList));
+            builder
+                .build()
+                .checkAndMutateRowSettings()
+                .getRetryableCodes()
+                .containsAll(retryCodeList))
+        .isTrue();
     assertThat(builder.build().checkAndMutateRowSettings().getRetrySettings())
         .isSameInstanceAs(retrySettings);
 
     assertThat(
-        builder
-            .build()
-            .toBuilder()
-            .checkAndMutateRowSettings()
-            .getRetryableCodes()
-            .containsAll(retryCodeList));
+            builder
+                .build()
+                .toBuilder()
+                .checkAndMutateRowSettings()
+                .getRetryableCodes()
+                .containsAll(retryCodeList))
+        .isTrue();
     assertThat(builder.build().toBuilder().checkAndMutateRowSettings().getRetrySettings())
         .isSameInstanceAs(retrySettings);
   }
@@ -528,7 +548,8 @@ public class EnhancedBigtableStubSettingsTest {
   }
 
   private void verifyRetrySettingAreSane(Set<Code> retryCodes, RetrySettings retrySettings) {
-    assertThat(retryCodes.containsAll(Arrays.asList(Code.DEADLINE_EXCEEDED, Code.UNAVAILABLE)));
+    assertThat(retryCodes.containsAll(Arrays.asList(Code.DEADLINE_EXCEEDED, Code.UNAVAILABLE)))
+        .isTrue();
 
     assertThat(retrySettings.getTotalTimeout()).isGreaterThan(Duration.ZERO);
 
