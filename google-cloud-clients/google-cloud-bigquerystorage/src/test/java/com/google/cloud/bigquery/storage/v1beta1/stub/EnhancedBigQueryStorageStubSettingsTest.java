@@ -48,7 +48,7 @@ public class EnhancedBigQueryStorageStubSettingsTest {
 
   private static final int MAX_INBOUND_MESSAGE_SIZE = 1024 * 1024 * 11;
 
-  private static List<Code> codeList = Arrays.asList(Code.DEADLINE_EXCEEDED, Code.UNAVAILABLE);
+  private static List<Code> retryCodeList = Arrays.asList(Code.DEADLINE_EXCEEDED, Code.UNAVAILABLE);
 
   @Test
   public void testSettingsArePreserved() {
@@ -124,7 +124,7 @@ public class EnhancedBigQueryStorageStubSettingsTest {
   public void testReadRowsSettings() {
     ServerStreamingCallSettings.Builder<ReadRowsRequest, ReadRowsResponse> builder =
         EnhancedBigQueryStorageStubSettings.newBuilder().readRowsSettings();
-    assertThat(builder.getRetryableCodes().containsAll(codeList));
+    assertThat(builder.getRetryableCodes().containsAll(retryCodeList));
     RetrySettings retrySettings = builder.getRetrySettings();
     assertThat(retrySettings.getInitialRetryDelay()).isEqualTo(Duration.ofMillis(100L));
     assertThat(retrySettings.getRetryDelayMultiplier()).isWithin(1e-6).of(1.3);
@@ -161,7 +161,7 @@ public class EnhancedBigQueryStorageStubSettingsTest {
   }
 
   private void verifyRetrySettings(Set<Code> retryCodes, RetrySettings retrySettings) {
-    assertThat(retryCodes.containsAll(codeList));
+    assertThat(retryCodes.containsAll(retryCodeList));
     assertThat(retrySettings.getTotalTimeout()).isGreaterThan(Duration.ZERO);
     assertThat(retrySettings.getInitialRetryDelay()).isGreaterThan(Duration.ZERO);
     assertThat(retrySettings.getRetryDelayMultiplier()).isAtLeast(1.0);
