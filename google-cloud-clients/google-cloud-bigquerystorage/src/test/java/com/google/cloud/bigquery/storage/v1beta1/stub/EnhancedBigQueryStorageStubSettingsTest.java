@@ -124,7 +124,7 @@ public class EnhancedBigQueryStorageStubSettingsTest {
   public void testReadRowsSettings() {
     ServerStreamingCallSettings.Builder<ReadRowsRequest, ReadRowsResponse> builder =
         EnhancedBigQueryStorageStubSettings.newBuilder().readRowsSettings();
-    assertThat(builder.getRetryableCodes().containsAll(retryCodeList));
+    assertThat(builder.getRetryableCodes().containsAll(retryCodeList)).isTrue();
     RetrySettings retrySettings = builder.getRetrySettings();
     assertThat(retrySettings.getInitialRetryDelay()).isEqualTo(Duration.ofMillis(100L));
     assertThat(retrySettings.getRetryDelayMultiplier()).isWithin(1e-6).of(1.3);
@@ -161,7 +161,7 @@ public class EnhancedBigQueryStorageStubSettingsTest {
   }
 
   private void verifyRetrySettings(Set<Code> retryCodes, RetrySettings retrySettings) {
-    assertThat(retryCodes.containsAll(retryCodeList));
+    assertThat(retryCodes.containsAll(retryCodeList)).isTrue();
     assertThat(retrySettings.getTotalTimeout()).isGreaterThan(Duration.ZERO);
     assertThat(retrySettings.getInitialRetryDelay()).isGreaterThan(Duration.ZERO);
     assertThat(retrySettings.getRetryDelayMultiplier()).isAtLeast(1.0);
