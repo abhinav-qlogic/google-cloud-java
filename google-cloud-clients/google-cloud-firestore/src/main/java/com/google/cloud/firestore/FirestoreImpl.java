@@ -341,7 +341,8 @@ class FirestoreImpl implements Firestore {
                           }
                         });
                   }
-                });
+                },
+                userCallbackExecutor);
           }
 
           private SettableApiFuture<T> invokeUserCallback() {
@@ -396,7 +397,8 @@ class FirestoreImpl implements Firestore {
                     public void onSuccess(Void ignored) {
                       resultFuture.setException(throwable);
                     }
-                  });
+                  },
+                  userCallbackExecutor);
             } else {
               resultFuture.setException(throwable);
             }
