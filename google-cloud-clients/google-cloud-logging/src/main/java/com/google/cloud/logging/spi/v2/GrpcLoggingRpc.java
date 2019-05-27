@@ -16,6 +16,8 @@
 
 package com.google.cloud.logging.spi.v2;
 
+import static com.google.common.util.concurrent.MoreExecutors.directExecutor;
+
 import com.google.api.core.ApiFunction;
 import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutures;
@@ -44,7 +46,6 @@ import com.google.cloud.logging.v2.LoggingClient;
 import com.google.cloud.logging.v2.LoggingSettings;
 import com.google.cloud.logging.v2.MetricsClient;
 import com.google.cloud.logging.v2.MetricsSettings;
-import com.google.common.util.concurrent.MoreExecutors;
 import com.google.logging.v2.CreateLogMetricRequest;
 import com.google.logging.v2.CreateSinkRequest;
 import com.google.logging.v2.DeleteLogMetricRequest;
@@ -191,7 +192,7 @@ public class GrpcLoggingRpc implements LoggingRpc {
             throw new LoggingException(exception);
           }
         },
-        MoreExecutors.directExecutor());
+        directExecutor());
   }
 
   @Override

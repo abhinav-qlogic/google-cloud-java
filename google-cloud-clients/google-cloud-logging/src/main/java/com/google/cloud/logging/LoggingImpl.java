@@ -24,6 +24,7 @@ import static com.google.cloud.logging.Logging.ListOption.OptionType.PAGE_TOKEN;
 import static com.google.cloud.logging.Logging.WriteOption.OptionType.LABELS;
 import static com.google.cloud.logging.Logging.WriteOption.OptionType.LOG_NAME;
 import static com.google.cloud.logging.Logging.WriteOption.OptionType.RESOURCE;
+import static com.google.common.util.concurrent.MoreExecutors.directExecutor;
 
 import com.google.api.core.ApiFunction;
 import com.google.api.core.ApiFuture;
@@ -44,7 +45,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.google.logging.v2.CreateLogMetricRequest;
 import com.google.logging.v2.CreateSinkRequest;
@@ -144,7 +144,7 @@ class LoggingImpl extends BaseService<LoggingOptions> implements Logging {
             return function.apply(i);
           }
         },
-        MoreExecutors.directExecutor());
+        directExecutor());
   }
 
   private abstract static class BasePageFetcher<T> implements AsyncPageImpl.NextPageFetcher<T> {
@@ -618,7 +618,7 @@ class LoggingImpl extends BaseService<LoggingOptions> implements Logging {
                 }
               }
             },
-            MoreExecutors.directExecutor());
+            directExecutor());
         break;
     }
   }
