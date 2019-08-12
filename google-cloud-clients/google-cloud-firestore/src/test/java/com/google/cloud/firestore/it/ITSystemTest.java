@@ -73,6 +73,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -1209,7 +1210,9 @@ public class ITSystemTest {
           }
 
           @Override
-          public void onError(Throwable throwable) {}
+          public void onError(Throwable throwable) {
+            Assert.fail("Error occurred while streaming");
+          }
 
           @Override
           public void onCompleted() {}
@@ -1233,7 +1236,9 @@ public class ITSystemTest {
           }
 
           @Override
-          public void onError(Throwable throwable) {}
+          public void onError(Throwable throwable) {
+            Assert.fail("Error occurred while streaming");
+          }
 
           @Override
           public void onCompleted() {}
