@@ -140,24 +140,23 @@ class FirestoreImpl implements Firestore {
   @Override
   public ApiFuture<List<DocumentSnapshot>> getAll(
       @Nonnull DocumentReference... documentReferences) {
-    return this.getAll(documentReferences, null, null, null);
+    return this.getAll(documentReferences, null, null);
   }
 
   @Nonnull
   @Override
   public ApiFuture<List<DocumentSnapshot>> getAll(
       @Nonnull DocumentReference[] documentReferences, @Nullable FieldMask fieldMask) {
-    return this.getAll(documentReferences, fieldMask, null, null);
+    return this.getAll(documentReferences, fieldMask, null);
   }
 
-  /** Internal getAll() method that accepts an optional transaction id. */
-  ApiFuture<List<DocumentSnapshot>> getAll(
-      final DocumentReference[] documentReferences,
+  @Nonnull
+  @Override
+  public void getAll(
+      final @Nonnull DocumentReference[] documentReferences,
       @Nullable FieldMask fieldMask,
       @Nullable ByteString transactionId,
-      @Nullable final ApiStreamObserver apiStreamObserver) {
-    final SettableApiFuture<List<DocumentSnapshot>> futureList = SettableApiFuture.create();
-    final Map<DocumentReference, DocumentSnapshot> resultMap = new HashMap<>();
+      final ApiStreamObserver<DocumentSnapshot> userObserver) {
 
     ApiStreamObserver<BatchGetDocumentsResponse> responseObserver =
         new ApiStreamObserver<BatchGetDocumentsResponse>() {
@@ -177,9 +176,6 @@ class FirestoreImpl implements Firestore {
 
             switch (response.getResultCase()) {
               case FOUND:
-                documentReference =
-                    new DocumentReference(
-                        FirestoreImpl.this, ResourcePath.create(response.getFound().getName()));
                 documentSnapshot =
                     DocumentSnapshot.fromDocument(
                         FirestoreImpl.this,
@@ -199,35 +195,19 @@ class FirestoreImpl implements Firestore {
               default:
                 return;
             }
-
-            resultMap.put(documentReference, documentSnapshot);
-            if (null != apiStreamObserver) {
-              apiStreamObserver.onNext(documentSnapshot);
-            }
+            userObserver.onNext(documentSnapshot);
           }
 
           @Override
           public void onError(Throwable throwable) {
             tracer.getCurrentSpan().addAnnotation("Firestore.BatchGet: Error");
-            futureList.setException(throwable);
-            if (null != apiStreamObserver) {
-              apiStreamObserver.onError(throwable);
-            }
+            userObserver.onError(throwable);
           }
 
           @Override
           public void onCompleted() {
             tracer.getCurrentSpan().addAnnotation("Firestore.BatchGet: Complete");
-            List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
-
-            for (DocumentReference documentReference : documentReferences) {
-              documentSnapshots.add(resultMap.get(documentReference));
-            }
-
-            futureList.set(documentSnapshots);
-            if (null != apiStreamObserver) {
-              apiStreamObserver.onCompleted();
-            }
+            userObserver.onCompleted();
           }
         };
 
@@ -254,17 +234,43 @@ class FirestoreImpl implements Firestore {
                 "numDocuments", AttributeValue.longAttributeValue(documentReferences.length)));
 
     streamRequest(request.build(), responseObserver, firestoreClient.batchGetDocumentsCallable());
-
-    return futureList;
   }
 
-  @Nonnull
-  @Override
-  public void getAll(
-      @Nonnull DocumentReference[] documentReferences,
+  /** Internal getAll() method that accepts an optional transaction id. */
+  ApiFuture<List<DocumentSnapshot>> getAll(
+      final DocumentReference[] documentReferences,
       @Nullable FieldMask fieldMask,
-      final ApiStreamObserver<DocumentSnapshot> responseObserver) {
-    this.getAll(documentReferences, fieldMask, null, responseObserver);
+      @Nullable ByteString transactionId) {
+    final SettableApiFuture<List<DocumentSnapshot>> futureList = SettableApiFuture.create();
+    final Map<DocumentReference, DocumentSnapshot> documentSnapshotMap = new HashMap<>();
+    for (DocumentReference documentReference : documentReferences) {
+      documentSnapshotMap.put(documentReference, null);
+    }
+    getAll(
+        documentReferences,
+        fieldMask,
+        transactionId,
+        new ApiStreamObserver<DocumentSnapshot>() {
+          @Override
+          public void onNext(DocumentSnapshot documentSnapshot) {
+            documentSnapshotMap.put(documentSnapshot.getReference(), documentSnapshot);
+          }
+
+          @Override
+          public void onError(Throwable throwable) {
+            futureList.setException(throwable);
+          }
+
+          @Override
+          public void onCompleted() {
+            List<DocumentSnapshot> documentSnapshotsList = new ArrayList<>();
+            for (DocumentReference documentReference : documentReferences) {
+              documentSnapshotsList.add(documentSnapshotMap.get(documentReference));
+            }
+            futureList.set(documentSnapshotsList);
+          }
+        });
+    return futureList;
   }
 
   @Nonnull
