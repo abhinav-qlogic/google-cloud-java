@@ -243,9 +243,6 @@ class FirestoreImpl implements Firestore {
       @Nullable ByteString transactionId) {
     final SettableApiFuture<List<DocumentSnapshot>> futureList = SettableApiFuture.create();
     final Map<DocumentReference, DocumentSnapshot> documentSnapshotMap = new HashMap<>();
-    for (DocumentReference documentReference : documentReferences) {
-      documentSnapshotMap.put(documentReference, null);
-    }
     getAll(
         documentReferences,
         fieldMask,
